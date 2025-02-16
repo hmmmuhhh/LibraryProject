@@ -25,6 +25,10 @@ tasks.test {
     useJUnitPlatform()
 }
 
+tasks.war {
+    archiveFileName.set("LibraryProject.war")
+}
+
 tasks.register<Copy>("deployToTomcat") {
     dependsOn("war") // Ensure WAR is built first
     from("build/libs") // Location of WAR file
