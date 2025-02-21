@@ -42,7 +42,6 @@ public class MemberServlet extends HttpServlet {
         out.println("        </thead>");
         out.println("        <tbody>");
 
-        // Dynamically generate member rows
         synchronized (members) {
             for (Member member : members) {
                 out.println("            <tr>");

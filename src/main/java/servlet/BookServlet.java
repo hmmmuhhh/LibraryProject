@@ -42,7 +42,6 @@ public class BookServlet extends HttpServlet {
         out.println("        </thead>");
         out.println("        <tbody>");
 
-        // Dynamically generate book rows
         synchronized (books) {
             for (Book book : books) {
                 out.println("            <tr>");
@@ -72,23 +71,18 @@ public class BookServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Get form parameters
+
         String code = request.getParameter("code");
         String title = request.getParameter("title");
         String author = request.getParameter("author");
 
-        // Validate parameters
         if (code == null || title == null || author == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
             return;
         }
-
-        // Add the new book to the list
         synchronized (books) {
             books.add(new Book(code, title, author, LocalDate.now()));
         }
-
-        // Redirect to the book list page
         response.sendRedirect(request.getContextPath() + "/books");
     }
 

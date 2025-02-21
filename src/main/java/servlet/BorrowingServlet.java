@@ -40,7 +40,6 @@ public class BorrowingServlet extends HttpServlet {
         out.println("        </thead>");
         out.println("        <tbody>");
 
-        // Dynamically generate borrowing rows
         synchronized (borrowings) {
             for (Borrowing borrowing : borrowings) {
                 out.println("            <tr>");

@@ -11,6 +11,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.postgresql:postgresql:42.7.3") // PostgreSQL JDBC driver
     implementation("jakarta.servlet:jakarta.servlet-api:5.0.0") // Provides Servlet API
     compileOnly("javax.servlet:javax.servlet-api:4.0.1") // For older servlet versions, if needed
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
