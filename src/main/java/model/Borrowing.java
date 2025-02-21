@@ -15,7 +15,6 @@ public class Borrowing {
         this.returnDate = returnDate;
     }
 
-    // Getters and Setters
     public String getBookCode() { return bookCode; }
     public String getMemberId() { return memberId; }
     public LocalDate getBorrowDate() { return borrowDate; }

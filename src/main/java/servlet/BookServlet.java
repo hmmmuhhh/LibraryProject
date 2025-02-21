@@ -1,7 +1,7 @@
 package servlet;
 
 import model.Book;
-import javax.servlet.*;
+
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
@@ -18,49 +18,82 @@ public class BookServlet extends HttpServlet {
     static final List<Book> books = new ArrayList<>();
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        out.println("<html><body>");
-        out.println("<h1>Books</h1>");
-        out.println("<table border='1'><tr><th>Code</th><th>Title</th><th>Author</th><th>Date Added</th></tr>");
-        for (Book book : books) {
-            out.println("<tr><td>" + book.getCode() + "</td><td>" + book.getTitle() + "</td><td>" + book.getAuthor() + "</td><td>" + book.getDate() + "</td></tr>");
+
+        out.println("<!DOCTYPE html>");
+        out.println("<html lang=\"en\">");
+        out.println("<head>");
+        out.println("    <meta charset=\"UTF-8\">");
+        out.println("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+        out.println("    <title>Books</title>");
+        out.println("    <link rel=\"stylesheet\" href=\"styles.css\">");
+        out.println("</head>");
+        out.println("<body>");
+        out.println("    <h1>Books</h1>");
+        out.println("    <table>");
+        out.println("        <thead>");
+        out.println("            <tr>");
+        out.println("                <th>Code</th>");
+        out.println("                <th>Title</th>");
+        out.println("                <th>Author</th>");
+        out.println("            </tr>");
+        out.println("        </thead>");
+        out.println("        <tbody>");
+
+        // Dynamically generate book rows
+        synchronized (books) {
+            for (Book book : books) {
+                out.println("            <tr>");
+                out.println("                <td>" + book.getCode() + "</td>");
+                out.println("                <td>" + book.getTitle() + "</td>");
+                out.println("                <td>" + book.getAuthor() + "</td>");
+                out.println("            </tr>");
+            }
         }
-        out.println("</table>");
-        out.println("<h2>Add New Book</h2>");
-        out.println("<form method='post'>");
-        out.println("Code: <input type='text' name='code' required><br>");
-        out.println("Title: <input type='text' name='title' required><br>");
-        out.println("Author: <input type='text' name='author' required><br>");
-        out.println("<input type='submit' value='Add Book'></form>");
-        out.println("</body></html>");
+
+        out.println("        </tbody>");
+        out.println("    </table>");
+
+        out.println("    <h2>Add Book</h2>");
+        out.println("    <form action=\"/LibraryProject/books\" method=\"post\">");
+        out.println("        <label for=\"code\">Code:</label>");
+        out.println("        <input type=\"text\" id=\"code\" name=\"code\" required><br>");
+        out.println("        <label for=\"title\">Title:</label>");
+        out.println("        <input type=\"text\" id=\"title\" name=\"title\" required><br>");
+        out.println("        <label for=\"author\">Author:</label>");
+        out.println("        <input type=\"text\" id=\"author\" name=\"author\" required><br>");
+        out.println("        <button type=\"submit\">Add Book</button>");
+        out.println("    </form>");
+        out.println("</body>");
+        out.println("</html>");
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Get form parameters
         String code = request.getParameter("code");
         String title = request.getParameter("title");
         String author = request.getParameter("author");
 
+        // Validate parameters
         if (code == null || title == null || author == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
             return;
         }
 
+        // Add the new book to the list
         synchronized (books) {
-            boolean exists = books.stream().anyMatch(b -> b.getCode().equals(code));
-            if (exists) {
-                response.sendError(HttpServletResponse.SC_CONFLICT, "Book code already exists");
-                return;
-            }
             books.add(new Book(code, title, author, LocalDate.now()));
         }
+
+        // Redirect to the book list page
         response.sendRedirect(request.getContextPath() + "/books");
     }
 
     @Override
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String path = request.getPathInfo();
         if (path == null || path.equals("/")) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -85,7 +118,7 @@ public class BookServlet extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String path = request.getPathInfo();
         if (path == null || path.equals("/")) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);

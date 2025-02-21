@@ -1,7 +1,7 @@
 package servlet;
 
 import model.Member;
-import javax.servlet.*;
+
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
@@ -18,26 +18,58 @@ public class MemberServlet extends HttpServlet {
     static final List<Member> members = new ArrayList<>();
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        out.println("<html><body>");
-        out.println("<h1>Members</h1>");
-        out.println("<table border='1'><tr><th>ID</th><th>Name</th><th>Email</th><th>Join Date</th></tr>");
-        for (Member member : members) {
-            out.println("<tr><td>" + member.getId() + "</td><td>" + member.getName() + "</td><td>" + member.getEmail() + "</td><td>" + member.getJoinDate() + "</td></tr>");
+
+        out.println("<!DOCTYPE html>");
+        out.println("<html lang=\"en\">");
+        out.println("<head>");
+        out.println("    <meta charset=\"UTF-8\">");
+        out.println("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+        out.println("    <title>Members</title>");
+        out.println("    <link rel=\"stylesheet\" href=\"styles.css\">");
+        out.println("</head>");
+        out.println("<body>");
+        out.println("    <h1>Members</h1>");
+        out.println("    <table>");
+        out.println("        <thead>");
+        out.println("            <tr>");
+        out.println("                <th>ID</th>");
+        out.println("                <th>Name</th>");
+        out.println("                <th>Email</th>");
+        out.println("            </tr>");
+        out.println("        </thead>");
+        out.println("        <tbody>");
+
+        // Dynamically generate member rows
+        synchronized (members) {
+            for (Member member : members) {
+                out.println("            <tr>");
+                out.println("                <td>" + member.getId() + "</td>");
+                out.println("                <td>" + member.getName() + "</td>");
+                out.println("                <td>" + member.getEmail() + "</td>");
+                out.println("            </tr>");
+            }
         }
-        out.println("</table>");
-        out.println("<h2>Add New Member</h2>");
-        out.println("<form method='post'>");
-        out.println("Name: <input type='text' name='name' required><br>");
-        out.println("Email: <input type='email' name='email' required><br>");
-        out.println("<input type='submit' value='Add Member'></form>");
-        out.println("</body></html>");
+
+        out.println("        </tbody>");
+        out.println("    </table>");
+
+        out.println("    <h2>Add Member</h2>");
+        out.println("    <form action=\"/LibraryProject/members\" method=\"post\">");
+        out.println("        <label for=\"name\">Name:</label>");
+        out.println("        <input type=\"text\" id=\"name\" name=\"name\" required><br>");
+        out.println("        <label for=\"email\">Email:</label>");
+        out.println("        <input type=\"email\" id=\"email\" name=\"email\" required><br>");
+        out.println("        <button type=\"submit\">Add Member</button>");
+        out.println("    </form>");
+        out.println("</body>");
+        out.println("</html>");
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String name = request.getParameter("name");
         String email = request.getParameter("email");
 
@@ -49,11 +81,12 @@ public class MemberServlet extends HttpServlet {
         synchronized (members) {
             members.add(new Member(name, email, LocalDate.now()));
         }
+
         response.sendRedirect(request.getContextPath() + "/members");
     }
 
     @Override
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String path = request.getPathInfo();
         if (path == null || path.equals("/")) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -78,7 +111,7 @@ public class MemberServlet extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String path = request.getPathInfo();
         if (path == null || path.equals("/")) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);

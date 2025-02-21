@@ -16,7 +16,6 @@ public class Member {
         this.joinDate = joinDate;
     }
 
-    // Getters and Setters
     public String getId() { return id; }
     public String getName() { return name; }
     public String getEmail() { return email; }

@@ -15,7 +15,6 @@ public class Book {
         this.date = date;
     }
 
-    // Getters and Setters
     public String getCode() { return code; }
     public String getTitle() { return title; }
     public String getAuthor() { return author; }
